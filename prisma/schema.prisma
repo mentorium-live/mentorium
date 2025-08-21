@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Lecturer {
+  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  firstname  String
+  lastname   String
+  email      String?    @unique
+  department String?
+  status     String     @default("active")
+  created_at DateTime   @default(now()) @db.Timestamptz(6)
+  pairings   pairings[]
+
+  @@map("lecturers")
+}
+
+model pairings {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  student_id  String   @unique @db.Uuid
+  lecturer_id String   @db.Uuid
+  paired_at   DateTime @default(now()) @db.Timestamptz(6)
+  status      String   @default("active")
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  lecturers   Lecturer @relation(fields: [lecturer_id], references: [id], onDelete: Cascade)
+  students    students @relation(fields: [student_id], references: [id], onDelete: Cascade)
+}
+
+model students {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  index_number      String    @unique
+  firstname         String
+  lastname          String
+  year_of_admission Int
+  current_cwa       Decimal?  @db.Decimal(5, 2)
+  inserted_at       DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+  department        String?
+  pairings          pairings?
+}
