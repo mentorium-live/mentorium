@@ -139,9 +139,7 @@ export default function StudentsDirectory() {
       return
     }
     
-    const currentYear = new Date().getFullYear()
-    const yearOfStudy = parseInt(studentForm.year_of_study, 10)
-    const admissionYear = currentYear - yearOfStudy + 1
+    const yearGroup = parseInt(studentForm.year_of_study, 10)
 
     try {
       const res = await fetch('/api/students', {
@@ -151,7 +149,7 @@ export default function StudentsDirectory() {
           index_number: indexNumber,
           firstname: studentForm.firstname.trim(),
           lastname: studentForm.lastname.trim(),
-          year_of_admission: admissionYear,
+          year_of_admission: yearGroup,
           current_cwa: cwa,
           department: studentForm.department || undefined,
         })
@@ -239,7 +237,14 @@ export default function StudentsDirectory() {
     const currentYear = new Date().getFullYear()
     console.log('Processing students data:', dbStudents.length, 'students')
     return dbStudents.map((row) => {
-      const yearOfStudy = Math.max(1, currentYear - (row.year_of_admission ?? currentYear) + 1)
+      // If year_of_admission is already a year group (1-4), use it directly.
+      // Otherwise, treat it as a calendar admission year and compute year of study.
+      const admission = row.year_of_admission
+      const isYearGroup = typeof admission === 'number' && admission >= 1 && admission <= 4
+      const computedYear = isYearGroup
+        ? admission
+        : Math.max(1, currentYear - (admission ?? currentYear) + 1)
+      const yearOfStudy = Math.min(4, Math.max(1, computedYear))
       return {
         id: row.student_id,
         index_number: row.index_number,
