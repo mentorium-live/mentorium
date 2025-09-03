@@ -73,9 +73,7 @@ const getPerformanceIcon = (cwa: number) => {
 // Trend column removed for simplicity in the mentees table
 
 const getYearLabel = (year: number) => {
-  const suffixes = ['st', 'nd', 'rd', 'th']
-  const suffix = suffixes[year - 1] || 'th'
-  return `${year}${suffix} Year`
+  return `Year ${year}`
 }
 
 export default function LecturerMentees() {
@@ -263,6 +261,13 @@ export default function LecturerMentees() {
       : <ArrowDown className="w-4 h-4" />
   }
 
+  const clearFilters = () => {
+    setSearchTerm("")
+    setPerformanceFilter("all")
+    setYearFilter("all")
+    setCurrentPage(1)
+  }
+
   
 
   return (
@@ -378,7 +383,14 @@ export default function LecturerMentees() {
             </Select>
           </div>
 
-          
+          <Button 
+            variant="outline" 
+            onClick={clearFilters}
+            className="flex items-center gap-2"
+          >
+            <Filter className="w-4 h-4" />
+            Clear Filters
+          </Button>
       </div>
 
       {/* Mentees Table */}
