@@ -61,9 +61,7 @@ interface YearGroupStats {
 }
 
 const getYearLabel = (year: number) => {
-  const suffixes = ['st', 'nd', 'rd', 'th']
-  const suffix = suffixes[year - 1] || 'th'
-  return `${year}${suffix} Year`
+  return `Year ${year}`
 }
 
 export default function LecturerAnalytics() {
